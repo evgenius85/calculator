@@ -9,5 +9,7 @@ public class Calculator {
         Controller.inputCalculation();
 
         Controller.calculation();
+
+        View.showResult(Controller.resultString);
     }
 }

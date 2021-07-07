@@ -6,8 +6,8 @@ import java.util.List;
 public class Controller {
 
     public static final int INVALID_OPERATION = -1;
-    private static final int MIN_VALUE = 1;
-    private static final int MAX_VALUE = 10;
+    public static final int MIN_VALUE = 1;
+    public static final int MAX_VALUE = 10;
 
     public static String expression;
 
@@ -16,7 +16,6 @@ public class Controller {
 
     public static boolean firstNumIsRoman;
     public static boolean secondNumIsRoman;
-    public static boolean resultIsRoman;
 
     public static char[] firstNumRoman;
     public static char[] secondNumRoman;
@@ -37,6 +36,21 @@ public class Controller {
 
     public static void calculation() {
 
+        determineOperation();
+
+        determineFirstNum();
+        determineSecondNum();
+
+        numeralsSimilar();
+        numberIsInRange(firstNum);
+        numberIsInRange(secondNum);
+
+        makeCalculation();
+
+        convertResult2string();
+    }
+
+    private static void determineOperation() {
         while (!operationIsValid) {
             try {
                 operationPosition = expression.indexOf(arithmeticOperations[typeOfOperation]);
@@ -51,15 +65,9 @@ public class Controller {
                 typeOfOperation++;
             }
         }
+    }
 
-        try {
-            firstNum = Integer.parseInt(expression.substring(0, operationPosition).trim());
-        } catch (Exception ex) {
-            firstNumRoman = expression.substring(0, operationPosition).trim().toLowerCase().toCharArray();
-            firstNum = convertRoman2arabic(firstNumRoman);
-            firstNumIsRoman = true;
-        }
-
+    private static void determineSecondNum() {
         try {
             secondNum = Integer.parseInt(expression.substring(operationPosition + 1).trim());
         } catch (Exception ex) {
@@ -67,30 +75,44 @@ public class Controller {
             secondNum = convertRoman2arabic(secondNumRoman);
             secondNumIsRoman = true;
         }
+    }
 
+    private static void determineFirstNum() {
+        try {
+            firstNum = Integer.parseInt(expression.substring(0, operationPosition).trim());
+        } catch (Exception ex) {
+            firstNumRoman = expression.substring(0, operationPosition).trim().toLowerCase().toCharArray();
+            firstNum = convertRoman2arabic(firstNumRoman);
+            firstNumIsRoman = true;
+        }
+    }
+
+    private static void numeralsSimilar() {
         if (firstNumIsRoman != secondNumIsRoman) {
             System.out.println("Both numbers must be Arabic or Roman. Shutting down");
             System.exit(-1);
-        } else {
-            resultIsRoman = true;
         }
+    }
 
-        numberIsInRange(firstNum);
-        numberIsInRange(secondNum);
+    private static void numberIsInRange(int number) {
+        try {
+            if (number > MAX_VALUE || number < MIN_VALUE) {
+                throw new Exception("The number must be in range %i to 10");
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Shutting down");
+            System.exit(-1);
+        }
+    }
 
+    private static void makeCalculation() {
         switch (arithmeticOperations[typeOfOperation]) {
             case '+' -> resultInt = firstNum + secondNum;
             case '-' -> resultInt = firstNum - secondNum;
             case '*' -> resultInt = firstNum * secondNum;
             case '/' -> resultInt = firstNum / secondNum;
         }
-
-        if (resultIsRoman) {
-            resultString = convertArabic2Roman(resultInt);
-        } else {
-            resultString = Integer.toString(resultInt);
-        }
-        System.out.println(resultString);
     }
 
     public static String convertArabic2Roman(int number) {
@@ -146,15 +168,11 @@ public class Controller {
         return arabic;
     }
 
-    private static void numberIsInRange(int number) {
-        try {
-            if (number > MAX_VALUE || number < MIN_VALUE) {
-                throw new Exception("The number must be in range %i to 10");
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            System.out.println("Shutting down");
-            System.exit(-1);
+    private static void convertResult2string() {
+        if (firstNumIsRoman && secondNumIsRoman) {
+            resultString = convertArabic2Roman(resultInt);
+        } else {
+            resultString = Integer.toString(resultInt);
         }
     }
 }
